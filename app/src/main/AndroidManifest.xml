@@ -11,24 +11,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".WelcomeActivity">
-
-        </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".GuideActivity" />
-        <activity android:name=".login.LoginActivity" />
-        <activity android:name=".AdjusColumnActivity" />
-        <activity android:name=".PlayListActivity" />
-
-        <service android:name=".service.MusicService" />
-
-        <activity android:name=".PlayDetailsActivity" >
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".GuideActivity" />
+        <activity android:name=".login.LoginActivity" />
+        <activity android:name=".AdjusColumnActivity" />
+        <activity android:name=".PlayListActivity" >
+
             </activity>
+
+        <service android:name=".service.MusicService" />
+
+        <activity android:name=".PlayDetailsActivity" ></activity>
     </application>
 
 </manifest>

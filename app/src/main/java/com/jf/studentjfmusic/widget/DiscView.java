@@ -14,7 +14,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.bumptech.glide.Glide;
 import com.jf.studentjfmusic.R;
+import com.jf.studentjfmusic.bean.NewPlayListResultsBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,11 @@ public class DiscView  extends RelativeLayout {
     ViewPager mVp;
     ImageView iv_needle;
 
+    List<View> mViews;
+
+
+    //歌曲列表
+    ArrayList<NewPlayListResultsBean> mResultsBeen;
     /**
     *内容：
     *有趣的初始数据
@@ -70,6 +77,8 @@ public class DiscView  extends RelativeLayout {
     //唱盘头像大小
     private float PIC_SIZE;
 
+    private VPAdapter mVpAdapter;
+
 
 
 
@@ -98,34 +107,49 @@ public class DiscView  extends RelativeLayout {
         initNeedle();
         initViewPager(context);
     }
-    List<View> views;
+
     private void initViewPager(Context context) {
         mVp= (ViewPager) findViewById(R.id.vp);
-        views=new ArrayList<>();
-        for (int i = 0; i <5 ; i++) {
-
-            View itemView= LayoutInflater.from(context).inflate(R.layout.item_vi_disc,mVp,false);
-            ImageView iv= (ImageView) itemView.findViewById(R.id.iv);
-
-            LinearLayout.LayoutParams params= (LinearLayout.LayoutParams) iv.getLayoutParams();
-            params.height= (int) DISC_SIZE;
-            params.weight=(int) DISC_SIZE;
-
-            params.topMargin= (int) DISC_MARGIN_TOP;
-
-            iv.setLayoutParams(params);
-            iv.setImageResource(R.mipmap.play_disc);
-            views.add(itemView);
+        mResultsBeen=new ArrayList<>();
+        mViews=new ArrayList<>();
 
 
+        mVpAdapter=new VPAdapter();
+        mVp.setAdapter(mVpAdapter);
 
-        }
-        VPAdapter vpAdater=new VPAdapter();
-        mVp.setAdapter(vpAdater);
         mVp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            int lastpositionOffsetPixels;
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if(lastpositionOffsetPixels>positionOffsetPixels)
+                {
+                    if(positionOffset<0.5)
+                    {
+                        if(mDiscChangListener!=null)
+                        {
+                            mDiscChangListener.onActionbarChanged(mResultsBeen.get(position));
+                        }
+                    }else
+                    {
+                        mDiscChangListener.onActionbarChanged(mResultsBeen.get(mVp.getCurrentItem()));
+                    }
 
+                }
+                else if(lastpositionOffsetPixels<positionOffsetPixels)
+                {
+                    if(positionOffset>0.5)
+                    {
+                        if(mDiscChangListener!=null)
+                        {
+                            mDiscChangListener.onActionbarChanged(mResultsBeen.get(position+1));
+                        }
+                    }
+                    else
+                    {
+                        mDiscChangListener.onActionbarChanged(mResultsBeen.get(position));
+                    }
+                }
+                lastpositionOffsetPixels=positionOffsetPixels;
             }
 
             @Override
@@ -135,64 +159,115 @@ public class DiscView  extends RelativeLayout {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                if(state==1)
-                {
-                    ObjectAnimator animator=ObjectAnimator.ofFloat(iv_needle,View.ROTATION,0,NEEDLE_UP_ROTATION);
-                    animator.setDuration(500);
-                    animator.setInterpolator(new LinearInterpolator());
-                    animator.start();
-
-
-                }
-                else if(state==0)
-                {
-                    ObjectAnimator animator=ObjectAnimator.ofFloat(iv_needle,View.ROTATION,NEEDLE_UP_ROTATION,0);
-                    animator.setInterpolator(new LinearInterpolator());
-                    animator.setDuration(500);
-                    animator.start();
-
-
-                }
-
-
-
-
-
+                pageScrollOPeration(state);
             }
         });
 
 
+    }
 
+    private void pageScrollOPeration(int state) {
+        switch (state) {
+            case ViewPager.SCROLL_STATE_IDLE:
+                break;
+            case ViewPager.SCROLL_STATE_SETTLING:
+                ObjectAnimator animator1 = ObjectAnimator.ofFloat(iv_needle, View.ROTATION, NEEDLE_UP_ROTATION, 0);
+                animator1.setInterpolator(new LinearInterpolator());
+                animator1.setDuration(500);
+                animator1.start();
+                break;
+            case ViewPager.SCROLL_STATE_DRAGGING:
 
-
-
-
+                ObjectAnimator animator2 = ObjectAnimator.ofFloat(iv_needle, View.ROTATION, 0, NEEDLE_UP_ROTATION);
+                animator2.setDuration(500);
+                animator2.setInterpolator(new LinearInterpolator());
+                animator2.start();
+                break;
+        }
 
     }
-    class VPAdapter extends PagerAdapter
+
+ class VPAdapter extends PagerAdapter
+ {
+     @Override
+     public int getCount() {
+         return mViews.size();
+     }
+
+     @Override
+     public boolean isViewFromObject(View view, Object object) {
+         return view==object;
+     }
+
+     @Override
+     public Object instantiateItem(ViewGroup container, int position) {
+         container.addView(mViews.get(position));
+         return mViews.get(position);
+     }
+
+     @Override
+     public void destroyItem(ViewGroup container, int position, Object object) {
+         container.removeView(mViews.get(position));
+     }
+ }
+
+    public void setMusicData(ArrayList<NewPlayListResultsBean> resultsBeen,int position)
+    {
+        mResultsBeen.clear();
+        mResultsBeen.addAll(resultsBeen);
+        for (NewPlayListResultsBean bean:mResultsBeen) {
+
+            View itemView=LayoutInflater.from(getContext()).inflate(R.layout.item_vi_disc,mVp,false);
+
+            ImageView iv= (ImageView) itemView.findViewById(R.id.iv);
+            RelativeLayout.LayoutParams params= (RelativeLayout.LayoutParams) iv.getLayoutParams();
+            params.height= (int) DISC_SIZE;
+            params.width= (int) DISC_BG_SIZE;
+            params.topMargin= (int) DISC_MARGIN_TOP;
+            iv.setLayoutParams(params);
+            iv.setImageResource(R.mipmap.play_disc);
+
+
+            ImageView iv_pic= (ImageView) itemView.findViewById(R.id.iv_pic);
+            RelativeLayout.LayoutParams picParams= (LayoutParams) iv_pic.getLayoutParams();
+            picParams.width= (int) PIC_SIZE;
+            picParams.height= (int) PIC_SIZE;
+
+            picParams.topMargin=(int) (DISC_MARGIN_TOP + ((DISC_SIZE - PIC_SIZE) / 2));
+            iv_pic.setLayoutParams(picParams);
+
+            if(bean.getAlbumPic()!=null)
+            {
+                String url=bean.getAlbumPic().getUrl();
+                Glide.with(getContext()).load(url).into(iv_pic);
+            }
+
+            mViews.add(itemView);
+
+        }
+
+        mVpAdapter.notifyDataSetChanged();
+        mVp.setCurrentItem(position);
+    }
+
+
+
+    public DiscChangListener mDiscChangListener;
+
+    public interface DiscChangListener
     {
 
-        @Override
-        public int getCount() {
-            return views.size();
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view==object;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            container.addView(views.get(position));
-            return views.get(position);
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView(views.get(position));
-        }
+        public void onActionbarChanged(NewPlayListResultsBean bean);
     }
+    //构造方法
+    public void setDiscChangListener(DiscChangListener discChangListener)
+    {
+        this.mDiscChangListener=discChangListener;
+    }
+
+
+
+
 
     private void initNeedle() {
 

@@ -17,6 +17,9 @@ import com.jf.studentjfmusic.bean.NewPlayListResultsBean;
 
 import java.util.ArrayList;
 
+import static com.jf.studentjfmusic.PlayDetailsActivity.INDEX_KEY;
+import static com.jf.studentjfmusic.PlayDetailsActivity.RESULTSBEEN_KEY;
+
 /**
  * 固定头尾Adapter
  */
@@ -151,6 +154,7 @@ class ItemViewHolder extends RecyclerView.ViewHolder {
         }
 
 
+        final int finalPosition = position;
         itemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,6 +162,10 @@ class ItemViewHolder extends RecyclerView.ViewHolder {
                 //判断当前条目和最后一次记录的对象是否相等
                 if (bean.equals(mLastBean)) {
                     Intent intent = new Intent(holder.itemView.getContext(), PlayDetailsActivity.class);
+
+                    intent.putParcelableArrayListExtra(RESULTSBEEN_KEY,mResultsBeen);
+                    intent.putExtra(INDEX_KEY,finalPosition);
+
                     intent.putExtra(PlayDetailsActivity.DETAILS_KEY,bean);
                     ((Activity)holder.itemView.getContext()).startActivity(intent);
 
