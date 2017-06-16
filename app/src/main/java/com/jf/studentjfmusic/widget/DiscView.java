@@ -37,6 +37,8 @@ public class DiscView  extends RelativeLayout {
 
 
     //歌曲列表
+
+    ArrayList<ObjectAnimator> mObjectAnimators = new ArrayList<>();
     ArrayList<NewPlayListResultsBean> mResultsBeen;
     /**
     *内容：
@@ -265,8 +267,67 @@ public class DiscView  extends RelativeLayout {
         this.mDiscChangListener=discChangListener;
     }
 
+    public void playLast()
+    {
+        mVp.setCurrentItem(mVp.getCurrentItem()-1,true);
+
+    }
+
+    public void pause()
+    {
+        if(mMusicPlayStatus==MusicPlayStatus.PLAY)
+        {
+
+            needleUp();
+            mObjectAnimators.get(mVp.getCurrentItem()).pause();
+
+            mMusicPlayStatus=MusicPlayStatus.PAUSE;
 
 
+        }
+        else if(mMusicPlayStatus==MusicPlayStatus.PAUSE)
+
+        {
+
+            needleDown();
+            mMusicPlayStatus=MusicPlayStatus.PLAY;
+            mObjectAnimators.get(mVp.getCurrentItem()).resume();
+        }
+
+
+
+
+
+
+
+
+
+    }
+    public void playNext()
+    {
+        mVp.setCurrentItem(mVp.getCurrentItem()+1,true);
+    }
+    int mMusicPlayStatus=MusicPlayStatus.PLAY;
+   interface MusicPlayStatus
+   {
+       int PLAY=0;
+       int PAUSE=1;
+   }
+
+    public void needleUp(){
+        ObjectAnimator animator2 = ObjectAnimator.ofFloat(iv_needle, View.ROTATION, 0, NEEDLE_UP_ROTATION);
+        animator2.setDuration(500);
+        animator2.setInterpolator(new LinearInterpolator());
+        animator2.start();
+    }
+
+
+    public void needleDown(){
+        ObjectAnimator animator2 = ObjectAnimator.ofFloat(iv_needle, View.ROTATION,NEEDLE_UP_ROTATION, 0);
+        animator2.setDuration(500);
+        animator2.setInterpolator(new LinearInterpolator());
+        animator2.start();
+    }
 
 
     private void initNeedle() {

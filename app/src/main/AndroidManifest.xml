@@ -21,13 +21,12 @@
         <activity android:name=".GuideActivity" />
         <activity android:name=".login.LoginActivity" />
         <activity android:name=".AdjusColumnActivity" />
-        <activity android:name=".PlayListActivity" >
-
-            </activity>
+        <activity android:name=".PlayListActivity"></activity>
 
         <service android:name=".service.MusicService" />
 
-        <activity android:name=".PlayDetailsActivity" ></activity>
+        <activity android:name=".PlayDetailsActivity" />
+        <activity android:name=".activity.NearFriendActivity"></activity>
     </application>
 
 </manifest>

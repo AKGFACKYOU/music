@@ -7,7 +7,10 @@ import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
+import com.jf.studentjfmusic.Constant;
 
 import java.io.IOException;
 
@@ -18,7 +21,7 @@ import java.io.IOException;
 public class MusicService extends Service {
     private static final String TAG = "MusicService";
 
-    private MediaPlayer mMediaPlayer;
+    private static  MediaPlayer mMediaPlayer=new MediaPlayer();
 
 
     @Nullable
@@ -30,7 +33,12 @@ public class MusicService extends Service {
     public class MusicBinder extends Binder {
 
         public void play(){
+
+
             mMediaPlayer.start();
+
+            Intent intent=new Intent(Constant.Action.PLAY);
+            LocalBroadcastManager.getInstance(MusicService.this).sendBroadcast(intent);
         }
 
         /**
@@ -56,6 +64,11 @@ public class MusicService extends Service {
                 e.printStackTrace();
             }
             mMediaPlayer.start();
+
+
+            Intent intent=new Intent(Constant.Action.PLAY);
+            LocalBroadcastManager.getInstance(MusicService.this).sendBroadcast(intent);
+
         }
 
         /**

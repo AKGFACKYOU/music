@@ -181,7 +181,7 @@ class ItemViewHolder extends RecyclerView.ViewHolder {
 
 
                     //本地广播
-                    Intent intent = new Intent(Constant.Action.PLAY);
+                    Intent intent = new Intent(Constant.Action.ACTION_PLAY);
                     intent.putExtra(PLAYDATA_KEY, bean);
 
                     //获取广播管理器

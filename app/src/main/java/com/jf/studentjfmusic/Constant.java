@@ -20,7 +20,9 @@ public class Constant {
     }
 
     public static class Action{
-        public final static String PLAY = "com.jf.studentjfmusic.action_play";
+        public final static String ACTION_PLAY = "com.jf.studentjfmusic.action_play";
+
+        public final static String PLAY="com.jf.studentjfmusic.play";
 
 
     }

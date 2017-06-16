@@ -87,6 +87,7 @@ public class PlayListActivity extends AppCompatActivity {
     ArrayList<NewPlayListResultsBean> mResultsBeens;
     private RecommendedAdapter mPlayListAdapter;
     private HomeResponse.ResultsBean.PlayListBean mPlayListBean;
+    private PlayBroadcastReceiver mPlayBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +121,7 @@ public class PlayListActivity extends AppCompatActivity {
         Glide.with(this)
                 .load(mPlayListBean.getPicUrl())
                 //模糊图片, this   10 模糊度   5 将图片缩放到5倍后进行模糊
-                .bitmapTransform(new BlurTransformation(this,10,5) {
+                .bitmapTransform(new BlurTransformation(this,20,5) {
                 })
                 .into(head_iv_bg);
 
@@ -195,14 +196,21 @@ public class PlayListActivity extends AppCompatActivity {
 
     public void registerBroadcast() {
 
-        PlayBroadcastReceiver playBroadcastReceiver = new PlayBroadcastReceiver();
+        mPlayBroadcastReceiver = new PlayBroadcastReceiver();
 
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Constant.Action.PLAY);
+        intentFilter.addAction(Constant.Action.ACTION_PLAY);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(playBroadcastReceiver, intentFilter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mPlayBroadcastReceiver, intentFilter);
 
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        Intent intent=new Intent(this,MusicService.class);
+        bindService(intent,connection,BIND_AUTO_CREATE);
+        super.onDestroy();
     }
 
     public void bindMusicService() {

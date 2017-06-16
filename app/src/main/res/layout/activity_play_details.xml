@@ -136,17 +136,20 @@
 
 
             <ImageView
+                android:id="@+id/iv_last"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@mipmap/play_btn_prev" />
 
 
             <ImageView
+                android:id="@+id/iv_play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@mipmap/play_rdi_btn_play" />
 
             <ImageView
+                android:id="@+id/iv_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@mipmap/play_btn_next" />
